@@ -6,17 +6,7 @@
 # from time import time, sleep
 
 
-# def display_menu():
-#     print(
-#         """
-#     StockTracker Menu
-#     1. Track Watchlist
-#     2. Add Watchlist 
-#     3. Delete Watchlistpi
-#     4. Edit Watchlist
-#     5. Exit   
-#         """
-#     )
+
 
 # def track(watchlist):
 #     start_time = time()
@@ -31,14 +21,7 @@
 #             elapsed = 0
 #         sleep(1)
 
-# def add_list():
-#     symbols = []
-#     symbol = input("Enter a stock symbol: ")
-#     while symbol != '':
-#         if symbol not in symbols:
-#             symbols.append(symbol.upper())
-#         symbol = input("Enter a stock symbol: ")    
-#     return sorted(symbols)
+
 
 # def edit_list():
 #     pass
@@ -81,8 +64,50 @@ def getWatchListsFromDirectory():
         os.makedirs('./watchlists')
     
     #For each file in watchlist, check if it is a file, and then add to watchlist without the file extension
-    return [f.split(".")[0] for f in os.listdir('./watchlists') if os.path.isfile('./watchlists/' + f)]
+    return [f.split(".")[0] for f in os.listdir('./watchlists') if f.endswith('.txt')]
+
     
+#menu from which user selects whether to track, add, delete, edit watchlist or exit the program 
+def display_menu():
+    print(
+        """
+    StockTracker Menu
+    1. Track Watchlist
+    2. Add Watchlist 
+    3. Delete Watchlist
+    4. Edit Watchlist
+    5. Exit   
+        """
+    )
+
+def add_list():
+    symbols = []
+    symbol = input("Enter a stock symbol: ")
+    while symbol != '':
+        if symbol not in symbols:
+            symbols.append(symbol.upper())
+        symbol = input("Enter a stock symbol: ")    
+    return sorted(symbols)
+
+
+
+def requested_action(val):
+    actions = {2: add_list}
+
+    return actions.get(int(val), None)
+    
+
+
+def promptAction():
+    #Ask user for menu option
+    menu_option = input("Enter your selection: ")
+
+    #dictionary will return data structure if valid option, None returns if invalid. If invalid reprompt user
+    while not requested_action(menu_option): 
+        print("Not valid option")
+        menu_option = input("Please select valid option?")
+
+    return requested_action(menu_option)
 
 #Render menu, present user with the list of saved watchlists. If none exist, prompt user to add list and kick back to menu  :(
 
@@ -92,7 +117,18 @@ def getWatchListsFromDirectory():
 
 
 def main():
-    print(getWatchListsFromDirectory())
+
+    #get current watchlists, create directory if needed
+    watchlists = getWatchListsFromDirectory()
+
+    #render menu
+    display_menu()
+
+    #get user input
+    action = promptAction()
+
+    #call function
+    action()
 
 if __name__ == "__main__":
     main()
